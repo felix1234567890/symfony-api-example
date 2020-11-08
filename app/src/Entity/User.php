@@ -14,12 +14,18 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Controller\MakeAdminController;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(normalizationContext={"groups"={"user:read"}, "swagger_definition_name"="read"}, denormalizationContext={"groups"={"user:write"}, "swagger_definition_name"="write"},
  * attributes={"pagination_items_per_page"=8},
- *     itemOperations={"get"={"normalization_context"={"groups"={"user:read","user:item:get"}}},"put"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object==user","normalization_context"={"groups"={"user:read","user:item:get"}}},"delete"}
+ *     itemOperations={"get"={"normalization_context"={"groups"={"user:read","user:item:get"}}},"put"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object==user","normalization_context"={"groups"={"user:read","user:item:get"}}},"delete",
+ *     "make_admin"={
+ *         "method"="GET",
+ *         "path"="/users/{id}/admin",
+ *         "controller"=MakeAdminController::class,
+ *     }}
 )
  * @ApiFilter(SearchFilter::class, properties={"username":"partial"})
  * @ApiFilter(
