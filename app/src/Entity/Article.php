@@ -60,6 +60,10 @@ class Article
      * @Groups({"article:read","article:write"})
      */
     private $author;
+    /**
+     * @Groups({"article:read"})
+     */
+    private $slug;
 
     public function __construct()
     {
@@ -136,5 +140,22 @@ class Article
      */
     public function setUpdatedAtValue() {
         $this->setUpdatedAt(new \DateTime());
+    }
+
+    /**
+     * @return string
+     */
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param string $slug
+     */
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
+        return $this;
     }
 }

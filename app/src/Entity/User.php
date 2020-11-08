@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ApiResource(normalizationContext={"groups"={"user:read"}, "swagger_definition_name"="read"}, denormalizationContext={"groups"={"user:write"}, "swagger_definition_name"="write"},
  * attributes={"pagination_items_per_page"=8},
- *     itemOperations={"get"={"normalization_context"={"groups"={"user:read","user:item:get"}}},"put"={"security"="object.owner==user"},"delete"}
+ *     itemOperations={"get"={"normalization_context"={"groups"={"user:read","user:item:get"}}},"put"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object==user","normalization_context"={"groups"={"user:read","user:item:get"}}},"delete"}
 )
  * @ApiFilter(SearchFilter::class, properties={"username":"partial"})
  * @ApiFilter(
