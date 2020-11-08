@@ -13,7 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  * @ORM\HasLifecycleCallbacks()
  * @ApiResource(normalizationContext={"groups"={"article:read"}, "swagger_definition_name"="read"},denormalizationContext={"groups"={"article:write"}, "swagger_definition_name"="write"},
- * itemOperations={"get"={"normalization_context"={"groups"={"user:read","article:read"}}},"put","delete"}
+ * itemOperations={"get"={"normalization_context"={"groups"={"user:read","article:read"}}},"put"={"security"="is_granted('article-edit', object)"},
+ *         "delete"={"security"="is_granted('article-delete', object)"}}
 )
  */
 class Article
