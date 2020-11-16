@@ -16,9 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  * @ORM\HasLifecycleCallbacks()
  * @ApiResource(normalizationContext={"groups"={"article:read"}, "swagger_definition_name"="read"},denormalizationContext={"groups"={"article:write"}, "swagger_definition_name"="write"},
- * itemOperations={"get"={"normalization_context"={"groups"={"user:read","article:read"}}},"put"={"security"="is_granted('article-edit', object)"},
- *         "delete"={"security"="is_granted('article-delete', object)"}}
-)
+ * itemOperations={"get"={"normalization_context"={"groups"={"user:read","article:read", "article:item-read"}}},"put"={"security"="is_granted('article-edit', object)"},
+ *         "delete"={"security"="is_granted('article-delete', object)"}})
  */
 class Article
 {
@@ -32,7 +31,7 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"article:read","article:write","user:item:get","comment:read"})
+     * @Groups({"article:read","article:write","user:item:get","comment:read", "tag:read"})
      * @Assert\NotBlank()
      * @Assert\Length(min="3")
      */
@@ -40,7 +39,7 @@ class Article
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"article:read","article:write", "user:item:get", "comment:read"})
+     * @Groups({"article:read","article:write", "user:item:get", "comment:read", "tag:read"})
      * @Assert\NotBlank()
      * @Assert\Length(min="10")
      */
@@ -65,7 +64,7 @@ class Article
      */
     private $author;
     /**
-     * @Groups({"article:read"})
+     * @Groups({"article:item-read"})
      */
     private $slug;
 

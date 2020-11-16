@@ -13,18 +13,24 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Controller\MakeAdminController;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ApiResource(normalizationContext={"groups"={"user:read"}, "swagger_definition_name"="read"}, denormalizationContext={"groups"={"user:write"}, "swagger_definition_name"="write"},
- * attributes={"pagination_items_per_page"=8},
- *     itemOperations={"get"={"normalization_context"={"groups"={"user:read","user:item:get"}}},"put"={"access_control"="is_granted('IS_AUTHENTICATED_FULLY') and object==user","normalization_context"={"groups"={"user:read","user:item:get"}}},"delete",
+ * @ApiResource(normalizationContext={"groups"={"user:read"}, "swagger_definition_name"="read"},
+ *     denormalizationContext={"groups"={"user:write"}, "swagger_definition_name"="write"},
+ *     attributes={"pagination_items_per_page"=8},
+ *     collectionOperations={"get","post"={"validation_groups"={"Default", "create"}}},
+ *     itemOperations={"get"={"normalization_context"={"groups"={"user:read","user:item:get"}}, "security"="object == user"},
+ *     "put"={"security"="is_granted('ROLE_ADMIN') or object == user"},
+ *     "delete"={"security"="is_granted('ROLE_ADMIN') or object == user"},
  *     "make_admin"={
  *         "method"="GET",
  *         "path"="/users/{id}/admin",
  *         "controller"=MakeAdminController::class,
+ *         "security"="is_granted('ROLE_ADMIN')"
  *     }}
 )
  * @ApiFilter(SearchFilter::class, properties={"username":"partial"})
@@ -62,11 +68,16 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
-     * @Groups({"user:write"})
-     * @Assert\NotBlank()
-     * @Assert\Regex(pattern="/^(?=.*[a-z])(?=.*\d).{6,}$/i")
      */
     private $password;
+
+    /**
+     * @Groups("user:write")
+     * @SerializedName("password")
+     * @Assert\NotBlank(groups={"create"})
+     * @Assert\Regex(pattern="/^(?=.*[a-z])(?=.*\d).{6,}$/i", groups={"create"})
+     */
+    private $plainPassword;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -183,8 +194,7 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        $this->plainPassword = null;
     }
 
     public function getFirstName(): ?string
@@ -278,6 +288,18 @@ class User implements UserInterface
                 $comment->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }

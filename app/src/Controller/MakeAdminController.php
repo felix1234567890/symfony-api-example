@@ -24,6 +24,8 @@ class MakeAdminController
             $data->setRoles(["ROLE_ADMIN"]);
             $this->entityManager->persist($data);
             $this->entityManager->flush();
+        } else {
+            throw new \Exception("This user is already an admin");
         }
         return $data;
     }
