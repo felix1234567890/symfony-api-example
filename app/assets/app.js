@@ -13,6 +13,6 @@ import {render} from "react-dom"
 // Replace with your own API entrypoint
 // For instance if https://example.com/api/books is the path to the collection of book resources, then the entrypoint is https://example.com/api
 const Admin = () => (
-    <HydraAdmin entrypoint="http://192.168.99.100:8000/api" />
+    <HydraAdmin entrypoint="http://localhost:8000/api" />
 );
 render(<Admin />, document.getElementById('root'));

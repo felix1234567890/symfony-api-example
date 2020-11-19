@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
  * @ORM\HasLifecycleCallbacks()
  * @ApiResource(normalizationContext={"groups"={"article:read"}, "swagger_definition_name"="read"},denormalizationContext={"groups"={"article:write"}, "swagger_definition_name"="write"},
+ *     collectionOperations={"get", "post"={"security"="is_granted('IS_AUTHENTICATED_FULLY')"}},
  * itemOperations={"get"={"normalization_context"={"groups"={"user:read","article:read", "article:item-read"}}},"put"={"security"="is_granted('article-edit', object)"},
  *         "delete"={"security"="is_granted('article-delete', object)"}})
  */
@@ -60,7 +61,7 @@ class Article
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"article:read","article:write"})
+     * @Groups({"article:read"})
      */
     private $author;
     /**
@@ -75,9 +76,8 @@ class Article
     private $comments;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="articles")
-     *
-     * @Groups({"article:read", "article:write"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="articles",cascade={"persist"})
+     * @Groups({"article:read","article:write"})
      */
     private $tags;
 
