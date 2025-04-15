@@ -16,12 +16,17 @@ final class SwaggerDecorator implements NormalizerInterface
         $this->decorated = $decorated;
     }
 
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
-        return $this->decorated->supportsNormalization($data, $format);
+        return $this->decorated->supportsNormalization($data, $format, $context);
     }
 
-    public function normalize($object, string $format = null, array $context = [])
+    public function getSupportedTypes(?string $format): array
+    {
+        return $this->decorated->getSupportedTypes($format);
+    }
+
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array|\ArrayObject|string|int|float|bool|null
     {
         $docs = $this->decorated->normalize($object, $format, $context);
 

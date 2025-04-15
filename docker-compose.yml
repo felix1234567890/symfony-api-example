@@ -3,6 +3,7 @@ version: '3'
 services:
   db:
     image: mysql:8.0.20
+    platform: linux/amd64
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - "db_app:/var/lib/mysql"

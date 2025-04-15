@@ -2,52 +2,52 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
 use App\Repository\CommentRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=CommentRepository::class)
- * @ApiResource(
- *      normalizationContext={"groups"={"comment:read"}},
- *     denormalizationContext={"groups"={"comment:write"}}
- * )
- */
+#[ORM\Entity(repositoryClass: CommentRepository::class)]
+#[ApiResource(
+    normalizationContext: ['groups' => ['comment:read']],
+    denormalizationContext: ['groups' => ['comment:write']]
+)]
+#[GetCollection]
+#[Post]
+#[Get]
+#[Put]
+#[Delete]
+#[Patch]
 class Comment
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     * @Groups({"comment:read", "article:read"})
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['comment:read', 'article:read'])]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank
-     * @Assert\Length(min="10")
-     * @Groups({"comment:read", "comment:write", "article:read"})
-     */
-    private $text;
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 10)]
+    #[Groups(['comment:read', 'comment:write', 'article:read'])]
+    private ?string $text = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Article::class, inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @Groups({"comment:read","comment:write",})
-     */
-    private $article;
+    #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read', 'comment:write'])]
+    private ?Article $article = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     *
-     * @Groups({"comment:read","comment:write"})
-     */
-    private $user;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['comment:read', 'comment:write'])]
+    private ?User $user = null;
 
     public function getId(): ?int
     {

@@ -1,0 +1,83 @@
+openapi: 3.0.0
+info:
+  title: 'Symfony REST API example with Api Platform'
+  description: 'This is a sample API built with Symfony and API Platform'
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+    url: https://example.com/support
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: https://example.com/terms
+paths:
+  /api/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login to get JWT token
+      description: Login with email and password to get a JWT token
+      operationId: postCredentialsItem
+      requestBody:
+        description: Create new JWT token
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: admin@example.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: JWT token response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: Invalid credentials.
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      in: header
+security:
+  - JWT: []
+tags:
+  - name: Authentication
+    description: Operations about authentication
+  - name: User
+    description: Operations about users
+  - name: Article
+    description: Operations about articles
+  - name: Comment
+    description: Operations about comments
+  - name: Tag
+    description: Operations about tags

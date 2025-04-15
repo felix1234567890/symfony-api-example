@@ -3,11 +3,50 @@ api_platform:
     version: '1.0.0'
     mapping:
         paths: ['%kernel.project_dir%/src/Entity']
+    formats:
+        jsonld: ['application/ld+json']
+        json: ['application/json']
+        html: ['text/html']
     patch_formats:
         json: ['application/merge-patch+json']
+    docs_formats:
+        jsonld: ['application/ld+json']
+        jsonopenapi: ['application/vnd.openapi+json']
+        html: ['text/html']
+    defaults:
+        stateless: true
+        cache_headers:
+            vary: ['Content-Type', 'Authorization', 'Origin']
+        extra_properties:
+            standard_put: true
+            rfc_7807_compliant_errors: true
+        operation_name_resolver: 'api_platform.operation_name_resolver.router'
+        generate_operation_name: true
+        url_generation_strategy: 1
     swagger:
         versions: [3]
         api_keys:
-            apiKey:
+            JWT:
                 name: Authorization
                 type: header
+    # OpenAPI documentation configuration
+    openapi:
+        contact:
+            name: API Support
+            email: support@example.com
+        termsOfService: https://example.com/terms
+        license:
+            name: MIT
+            url: https://opensource.org/licenses/MIT
+        swagger_ui_extra_configuration:
+            persistAuthorization: true
+            displayOperationId: true
+            filter: true
+    # Enable the Swagger UI
+    enable_swagger_ui: true
+    # Enable ReDoc
+    enable_re_doc: true
+    # Enable the API docs generator
+    enable_docs: true
+    # Enable the entrypoint
+    enable_entrypoint: true

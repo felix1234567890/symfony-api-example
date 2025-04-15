@@ -7,17 +7,12 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class MakeAdminController
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private EntityManagerInterface $entityManager;
-
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager
+    ) {
     }
 
-    public function __invoke(User $data)
+    public function __invoke(User $data): User
     {
         $roles = $data->getRoles();
         if(!in_array("ROLE_ADMIN",$roles)){

@@ -10,7 +10,7 @@ class ArticleVoter extends Voter
 {
     const EDIT = "article-edit";
     const DELETE = "article-delete";
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
@@ -18,13 +18,13 @@ class ArticleVoter extends Voter
             && $subject instanceof \App\Entity\Article;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
         // if the user is anonymous, do not grant access
         if (!$user instanceof UserInterface) {
             return false;
         }
-        return $user->hasRoles("ROLE_ADMIN") || $user === $subject->getAuthor();
+        return in_array("ROLE_ADMIN", $user->getRoles()) || $user === $subject->getAuthor();
     }
 }

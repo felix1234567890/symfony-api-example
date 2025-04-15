@@ -2,9 +2,13 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Core\Annotation\ApiProperty;
-use ApiPlatform\Core\Annotation\ApiResource;
-use ApiPlatform\Core\Annotation\ApiSubresource;
+use ApiPlatform\Metadata\ApiResource;
+
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Delete;
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,74 +16,59 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=ArticleRepository::class)
- * @ORM\HasLifecycleCallbacks()
- * @ApiResource(normalizationContext={"groups"={"article:read"}, "swagger_definition_name"="read"},denormalizationContext={"groups"={"article:write"}, "swagger_definition_name"="write"},
- *     collectionOperations={"get", "post"={"security"="is_granted('IS_AUTHENTICATED_FULLY')"}},
- * itemOperations={"get"={"normalization_context"={"groups"={"user:read","article:read", "article:item-read"}}},"put"={"security"="is_granted('article-edit', object)"},
- *         "delete"={"security"="is_granted('article-delete', object)"}})
- */
+#[ORM\Entity(repositoryClass: ArticleRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ApiResource(
+    normalizationContext: ['groups' => ['article:read'], 'swagger_definition_name' => 'read'],
+    denormalizationContext: ['groups' => ['article:write'], 'swagger_definition_name' => 'write']
+)]
+#[GetCollection]
+#[Post(security: "is_granted('IS_AUTHENTICATED_FULLY')")]
+#[Get(normalizationContext: ['groups' => ['user:read', 'article:read', 'article:item-read']])]
+#[Put(security: "is_granted('article-edit', object)")]
+#[Delete(security: "is_granted('article-delete', object)")]
 class Article
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     * @Groups({"article:read"})
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['article:read'])]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Groups({"article:read","article:write","user:item:get","comment:read", "tag:read"})
-     * @Assert\NotBlank()
-     * @Assert\Length(min="3")
-     */
-    private $title;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['article:read', 'article:write', 'user:item:get', 'comment:read', 'tag:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3)]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="text")
-     * @Groups({"article:read","article:write", "user:item:get", "comment:read", "tag:read"})
-     * @Assert\NotBlank()
-     * @Assert\Length(min="10")
-     */
-    private $description;
+    #[ORM\Column(type: 'text')]
+    #[Groups(['article:read', 'article:write', 'user:item:get', 'comment:read', 'tag:read'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 10)]
+    private ?string $description = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @Groups("article:read")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    #[Groups(['article:read'])]
+    private ?\DateTimeInterface $createdAt = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     * @Groups("article:read")
-     */
-    private $updatedAt;
+    #[ORM\Column(type: 'datetime')]
+    #[Groups(['article:read'])]
+    private ?\DateTimeInterface $updatedAt = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"article:read"})
-     */
-    private $author;
-    /**
-     * @Groups({"article:item-read"})
-     */
-    private $slug;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'articles')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['article:read'])]
+    private ?User $author = null;
 
-    /**
-     * @ApiSubresource()
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article", orphanRemoval=true)
-     */
-    private $comments;
+    #[Groups(['article:item-read'])]
+    private ?string $slug = null;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="articles",cascade={"persist"})
-     * @Groups({"article:read","article:write"})
-     */
-    private $tags;
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', orphanRemoval: true)]
+    private Collection $comments;
+
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'articles', cascade: ['persist'])]
+    #[Groups(['article:read', 'article:write'])]
+    private Collection $tags;
 
     public function __construct()
     {
@@ -153,9 +142,8 @@ class Article
 
         return $this;
     }
-    /**
-     * @ORM\PreUpdate
-     */
+
+    #[ORM\PreUpdate]
     public function setUpdatedAtValue() {
         $this->setUpdatedAt(new \DateTime());
     }
@@ -178,7 +166,7 @@ class Article
     }
 
     /**
-     * @return Collection|Comment[]
+     * @return Collection<int, Comment>
      */
     public function getComments(): Collection
     {
@@ -206,8 +194,9 @@ class Article
 
         return $this;
     }
+
     /**
-     * @return Collection|Tag[]
+     * @return Collection<int, Tag>
      */
     public function getTags(): Collection
     {

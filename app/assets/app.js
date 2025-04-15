@@ -5,14 +5,47 @@
  * (and its CSS file) in your base layout (base.html.twig).
  */
 
-// any CSS you import will output into a single css file (app.css in this case)
-import React from "react";
-import { HydraAdmin } from "@api-platform/admin";
-import {render} from "react-dom"
+// Import styles
+import './styles/app.scss';
 
-// Replace with your own API entrypoint
-// For instance if https://example.com/api/books is the path to the collection of book resources, then the entrypoint is https://example.com/api
-const Admin = () => (
-    <HydraAdmin entrypoint="http://localhost:8000/api" />
-);
-render(<Admin />, document.getElementById('root'));
+// Import React and React Admin
+import React from "react";
+import { Admin, EditGuesser, ListGuesser, Resource, ShowGuesser } from 'react-admin';
+import { createRoot } from "react-dom/client";
+
+// Import custom providers and components
+import { dataProvider } from './apiPlatformDataProvider';
+import { authProvider } from './authProvider';
+import LoginPage from './LoginPage';
+
+// Custom Admin component with debug mode enabled
+const AdminApp = () => {
+    // Enable debug mode in console
+    console.log('Starting React Admin with API Platform data provider');
+
+    // Log environment information for debugging
+    console.log('Window location:', window.location.href);
+    console.log('Window origin:', window.location.origin);
+
+    return (
+        <Admin
+            dataProvider={dataProvider}
+            authProvider={authProvider}
+            loginPage={LoginPage}
+            disableTelemetry
+            requireAuth={true}
+        >
+            <Resource name="articles" list={ListGuesser} edit={EditGuesser} show={ShowGuesser} />
+            <Resource name="comments" list={ListGuesser} edit={EditGuesser} show={ShowGuesser} />
+            <Resource name="tags" list={ListGuesser} edit={EditGuesser} show={ShowGuesser} />
+            <Resource name="users" list={ListGuesser} edit={EditGuesser} show={ShowGuesser} />
+        </Admin>
+    );
+};
+
+// Render the admin interface
+const rootElement = document.getElementById('root');
+if (rootElement) {
+    const root = createRoot(rootElement);
+    root.render(<AdminApp />);
+}

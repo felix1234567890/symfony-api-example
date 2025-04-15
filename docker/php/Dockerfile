@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-buster
+FROM php:8.2-fpm-buster
 
 COPY docker/php/php.ini /usr/local/etc/php/conf.d/docker-php-config.ini
 
@@ -28,11 +28,10 @@ RUN docker-php-ext-install \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN curl -sS https://get.symfony.com/cli/installer | bash \
-    && mv /root/.symfony/bin/symfony /usr/local/bin/symfony
+    && mv /root/.symfony5/bin/symfony /usr/local/bin/symfony
 
 RUN apt-get install -y curl \
-  && curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-  && apt-get install -y nodejs \
-  && curl -L https://www.npmjs.com/install.sh | sh
+  && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+  && apt-get install -y nodejs
 
 WORKDIR /var/www/app
